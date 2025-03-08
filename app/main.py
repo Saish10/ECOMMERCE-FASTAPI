@@ -37,3 +37,8 @@ async def internal_server_error_handler(
         status_code=500,
         content={"detail": "Something went wrong. Please try again later."},
     )
+
+@app.get("/")
+def health_check():
+    """Returns a simple health check message"""
+    return {"status": "ok"}

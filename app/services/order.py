@@ -124,7 +124,7 @@ class OrderService(BaseService):
                 orders = orders.filter(Order.total_amount <= filters.max_price)
 
             logger.info("Order list retrieved successfully")
-            return True, "Order list retrieved successfully", orders.all()
+            return True, "Order list retrieved successfully", orders
         except Exception as e:
             logger.error("Error retrieving order list : %s", e, exc_info=True)
             return False, ERROR_MESSAGE, 500

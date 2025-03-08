@@ -1,16 +1,23 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from app.models.customer import Customer
 from app.schemas.customers import CustomerResponse
-from app.database import get_db  # Import DB dependency
+from app.database import get_db
+from app.utils.pagination import PaginatedResponse, paginate
 
 router = APIRouter(prefix="/customers", tags=["Customers"])
 
 
-@router.get("/", response_model=list[CustomerResponse])
-def get_customers(db: Session = Depends(get_db)):
+@router.get("/", response_model=PaginatedResponse[CustomerResponse])
+def get_customers(
+    request: Request,
+    page: int = 1,
+    page_size: int = 10,
+    db: Session = Depends(get_db),
+):
     """Fetch all customers"""
-    return db.query(Customer).all()
+    return paginate(db.query(Customer), page, page_size, request)
+
 
 @router.get("/{customer_id}", response_model=CustomerResponse)
 def get_customer(customer_id: int, db: Session = Depends(get_db)):

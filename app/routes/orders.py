@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import Depends, APIRouter, HTTPException, status
+from fastapi import Depends, APIRouter, HTTPException, Request, status
 
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -11,7 +11,7 @@ from app.schemas.orders import (
 )
 from app.services.order import OrderService
 from app.dependencies import router
-
+from app.utils.pagination import PaginatedResponse, paginate
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
@@ -30,16 +30,21 @@ def create(order: OrderCreateSchema, db: Session = Depends(get_db)):
     return {"message": message}
 
 
-@router.get("/", response_model=List[OrderResponse])
+@router.get("/", response_model=PaginatedResponse[OrderResponse])
 def order_list(
-    filters: OrderFilter = Depends(), db: Session = Depends(get_db)
+    request: Request,
+    filters: OrderFilter = Depends(),
+    page: int = 1,
+    page_size: int = 10,
+    db: Session = Depends(get_db)
 ):
-    """Retrieve orders with optional filtering"""
-    is_success, message, result = OrderService(db).get_orders(filters)
-    if not is_success:
-        raise HTTPException(status_code=result, detail=message)
-    return result
+    """Retrieve orders with optional filtering and pagination"""
+    is_success, message, query = OrderService(db).get_orders(filters)  # Return query, not list
 
+    if not is_success:
+        raise HTTPException(status_code=query, detail=message)
+
+    return paginate(query, page, page_size, request)
 
 @router.get("/{order_id}", response_model=OrderDetailResponse)
 def detail(order_id: int, db: Session = Depends(get_db)):

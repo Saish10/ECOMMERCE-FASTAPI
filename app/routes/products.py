@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.products import ProductService
@@ -7,17 +7,23 @@ from app.schemas.products import (
     ProductUpdate,
     ProductResponse,
 )
+from app.utils.pagination import PaginatedResponse, paginate
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
 
-@router.get("/", response_model=list[ProductResponse])
-def get_products(db: Session = Depends(get_db)):
+@router.get("/", response_model=PaginatedResponse[ProductResponse])
+def get_products(
+    request: Request,
+    page: int = 1,
+    page_size: int = 10,
+    db: Session = Depends(get_db)
+    ):
     """Retrieve all products."""
     is_success, message, result = ProductService(db).get_all_products()
     if not is_success:
         raise HTTPException(status_code=result, detail=message)
-    return result
+    return paginate(result, page, page_size, request)
 
 
 @router.get("/{product_id}", response_model=ProductResponse)

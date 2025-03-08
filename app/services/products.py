@@ -11,7 +11,7 @@ class ProductService(BaseService):
     def get_all_products(self):
         """Retrieve all products synchronously using ORM query."""
         try:
-            products = self.db.query(Product).all()
+            products = self.db.query(Product)
             return True, "Products retrieved successfully.", products
         except Exception as e:
             logger.error("Error retrieving products: %s", e, exc_info=True)

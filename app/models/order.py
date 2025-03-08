@@ -15,7 +15,9 @@ class Order(Base):
     status = Column(String(50), nullable=False)
 
     customer = relationship("Customer", back_populates="orders")
-    order_items = relationship("OrderItem", back_populates="order", cascade="all, delete")
+    order_items = relationship(
+        "OrderItem", back_populates="order", cascade="all, delete"
+    )
 
 
 class OrderItem(Base):
