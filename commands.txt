@@ -1,3 +1,11 @@
 psql -U user_name -d database_name < file.sql
 
 psql -U saish -d cc_fastapi < create_tables.sql
+
+DB_USER=saish
+DB_PASSWORD=password
+DB_NAME=cc_fastapi
+DB_HOST=localhost
+DB_PORT=5432
+APP_NAME=Creative Capsule
+GEMINI_API_KEY=AIzaSyCcwrHr7rITowQGwb00mvfe7MEoVJiRAcA
