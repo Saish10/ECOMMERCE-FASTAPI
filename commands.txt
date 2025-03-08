@@ -1,0 +1,3 @@
+psql -U user_name -d database_name < file.sql
+
+psql -U saish -d cc_fastapi < create_tables.sql
