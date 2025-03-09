@@ -1,6 +1,5 @@
 from typing import List
 from fastapi import Depends, APIRouter, HTTPException, Request, status
-from pydantic import PositiveInt
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas.orders import (
