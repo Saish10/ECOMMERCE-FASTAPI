@@ -24,3 +24,8 @@ class Customer(Base):
 
     def __repr__(self):
         return str(self.id)
+
+    @property
+    def full_name(self):
+        """Return the full name of the customer"""
+        return f"{self.first_name} {self.last_name}"

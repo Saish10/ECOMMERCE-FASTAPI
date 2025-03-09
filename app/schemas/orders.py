@@ -1,17 +1,23 @@
 from datetime import date
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import (
+    BaseModel,
+    Field,
+    field_validator,
+    PositiveInt,
+    PositiveFloat,
+)
 
 
 class OrderItemSchema(BaseModel):
     """Schema for an order item"""
 
-    product_id: int = Field(ge=0)
-    quantity: int = Field(
-        gt=0, description="Quantity must be greater than zero"
+    product_id: PositiveInt
+    quantity: PositiveInt = Field(
+        description="Quantity must be greater than zero"
     )
-    price: float = Field(ge=0, description="Price cannot be negative")
+    price: PositiveFloat = Field(ge=0, description="Price cannot be negative")
 
     @field_validator("quantity", mode="before")
     @classmethod
@@ -30,12 +36,10 @@ class OrderItemSchema(BaseModel):
         return value
 
 
-
-
 class OrderCreateSchema(BaseModel):
     """Schema for an order"""
 
-    customer_id: int = Field(ge=0)
+    customer_id: PositiveInt
     order_date: date
     items: List[OrderItemSchema]
 
@@ -63,23 +67,32 @@ class OrderFilter(BaseModel):
     """Filter options for orders"""
 
     status: Optional[str] = None
-    min_price: Optional[int] = None
-    max_price: Optional[int] = None
-    customer_id: Optional[int] = None
+    min_price: Optional[PositiveFloat] = None
+    max_price: Optional[PositiveFloat] = None
+    customer_id: Optional[PositiveInt] = None
     search: Optional[str] = None
 
+class CustomerSchema(BaseModel):
+    """Schema for Customer details"""
+    id: int
+    full_name: str
+
+    class Config:
+        """Configuration for CustomerSchema"""
+        from_attributes = True
 
 class OrderResponse(BaseModel):
     """Response schema for orders"""
 
-    id: int
-    customer_id: int
+    id: PositiveInt
+    customer: CustomerSchema
     date: date
     status: str
-    total_amount: float
+    total_amount: PositiveFloat
 
     class Config:
         """Configuration for OrderResponse"""
+
         from_attributes = True
 
 
@@ -90,4 +103,5 @@ class OrderDetailResponse(OrderResponse):
 
     class Config:
         """Configuration for OrderDetailResponse"""
+
         from_attributes = True
